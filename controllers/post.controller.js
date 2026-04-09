@@ -1,11 +1,12 @@
 import { Post } from "../models/post.model.js";
+import ApiError from "../util/ApiError.js";
+import asyncHandler from "../util/asyncHandler.js";
 
 
 /* -----------------------------
    Create Post
 ------------------------------*/
-export const createPost = async (req, res) => {
-  try {
+export const createPost = asyncHandler(async (req, res) => {
     const { title, content } = req.body;
 
     const post = await Post.create({
@@ -20,20 +21,13 @@ export const createPost = async (req, res) => {
       post
     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+  });
 
 
 /* -----------------------------
    Get All Posts
 ------------------------------*/
-export const getAllPosts = async (req, res) => {
-  try {
+export const getAllPosts =asyncHandler(async (req, res) => {
 
     const posts = await Post.find()
       .populate("user", "name email")
@@ -45,67 +39,40 @@ export const getAllPosts = async (req, res) => {
       posts
     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+  });
 
 
 /* -----------------------------
    Get Single Post
 ------------------------------*/
-export const getPostById = async (req, res) => {
-  try {
-
+export const getPostById =asyncHandler(async (req, res) => {
+  
     const post = await Post.findById(req.params.id)
       .populate("user", "name email");
 
-    if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found"
-      });
-    }
+    if (!post) throw new ApiError(404, "Post not found");
 
     res.json({
       success: true,
       post
     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+  });
 
 
 /* -----------------------------
    Update Post
 ------------------------------*/
-export const updatePost = async (req, res) => {
-  try {
+export const updatePost =asyncHandler(async (req, res) => {
 
     const post = await Post.findById(req.params.id);
 
-    if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found"
-      });
-    }
+    if (!post) throw new ApiError(404, "Post not found");
+
 
     // check ownership
-    if (post.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to update this post"
-      });
-    }
+    if (post.user.toString() !== req.user._id.toString()) throw new ApiError(403, "Not authorized to update this post");
+
 
     post.title = req.body.title || post.title;
     post.content = req.body.content || post.content;
@@ -118,20 +85,13 @@ export const updatePost = async (req, res) => {
       post: updatedPost
     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+  } );
 
 
 /* -----------------------------
    Get Logged-in User Posts
 ------------------------------*/
-export const getMyPosts = async (req, res) => {
-  try {
+export const getMyPosts =asyncHandler( async (req, res) => {
 
     const posts = await Post.find({ user: req.user._id })
       .populate("user", "name email")
@@ -143,20 +103,12 @@ export const getMyPosts = async (req, res) => {
       posts
     });
 
-  } catch (error) {
-    console.error("Error fetching user posts:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+  });
 
 /* -----------------------------
    Delete Post
 ------------------------------*/
-export const deletePost = async (req, res) => {
-  try {
+export const deletePost =asyncHandler( async (req, res) => {
 
     const post = await Post.findById(req.params.id);
 
@@ -182,10 +134,4 @@ export const deletePost = async (req, res) => {
       message: "Post deleted"
     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+  });

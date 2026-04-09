@@ -1,20 +1,16 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../util/token.js";
+import asyncHandler from "../util/asyncHandler.js";
+import ApiError from "../util/ApiError.js";
 
 
-export const registerUser = async (req, res) => {
-  try {
+export const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
 
     // check existing user
     const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({
-        success: false,
-        message: "User already exists"
-      });
-    }
+    if (userExists) throw new ApiError(400, "User already exists");
 
     // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,40 +35,23 @@ export const registerUser = async (req, res) => {
       }
     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+});
 
 
 /* -----------------------------
    Login User
 ------------------------------*/
-export const loginUser = async (req, res) => {
-  try {
+export const loginUser = asyncHandler(async (req, res) => {
 
     const { email, password } = req.body;
 
     const user = await User.findOne({ email }).select("+password");
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password"
-      });
-    }
+    if (!user) throw new ApiError(401, "Invalid email or password"); 
 
     const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password"
-      });
-    }
+    if (!isMatch) throw new ApiError(401, "Invalid email or password");
 
     // generate cookie token
     generateToken(res, user._id);
@@ -87,14 +66,7 @@ export const loginUser = async (req, res) => {
       }
     });
 
-  } catch (error) {
-
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+  });
 
 
 /* -----------------------------
