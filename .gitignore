@@ -1,0 +1,51 @@
+# 📦 Dependencies
+node_modules
+
+# 🔐 Environment variables
+.env
+.env.*
+!.env.example
+
+# 📝 Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 🗂️ Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# 📊 Coverage reports
+coverage/
+
+# 🧪 Test output
+.nyc_output/
+
+# 🏗️ Build files
+dist/
+build/
+
+# 🧹 Cache
+.cache/
+.parcel-cache/
+
+# 🖥️ OS files
+.DS_Store
+Thumbs.db
+
+# 🧠 IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 🗃️ Optional uploads (if using multer)
+uploads/
+
+# 🧾 Misc
+*.local
