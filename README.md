@@ -24,8 +24,12 @@ npm install
 3. Create `.env` file:
 
 ```
-MONGO_URI=your_mongodb_connection
-JWT_SECRET=your_secret_key
+PORT=3000
+# Database configuration
+MONGO_URI=mongodb://localhost:27017/express-blog
+
+JWT_SECRET=your_jwt_secret_key
+NODE_ENV =development
 ```
 
 4. Run server:
